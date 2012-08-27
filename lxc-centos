@@ -147,7 +147,6 @@ download_centos()
             echo "Failed to get a mirror"
             continue
         fi
-        MIRROR_URL="http://mirror.bytemark.co.uk/centos/$release.$releaseminor/os/$arch"
         RELEASE_URL="$MIRROR_URL/Packages/centos-release-$release-$releaseminor.el6.centos.9.i686.rpm"
         echo "Fetching from $RELEASE_URL"
         curl -f "$RELEASE_URL" > $INSTALL_ROOT/centos-release-$release-$releaseminor.centos.$arch.rpm
