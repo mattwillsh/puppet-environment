@@ -100,15 +100,16 @@ EOF
     echo "root:$root_password" | chroot $rootfs_path chpasswd
 
     # specifying this in the initial packages doesn't always work.
-    echo "installing centos-release package"
-    if [ ! -f ${rootfs_path}/etc/resolv.conf ]; then
-      cp /etc/resolv.conf ${rootfs_path}/etc/resolv.conf
-      remove_resolv=1
-    fi
-    chroot ${rootfs_path} yum --releasever=${release} -y install centos-release
-    if [ ! -z $remove_resolv ]; then
-      rm ${rootfs_path}/etc/resolv.conf
-    fi
+#    echo "installing centos-release package"
+#    if [ ! -f ${rootfs_path}/etc/resolv.conf ]; then
+#      cp /etc/resolv.conf ${rootfs_path}/etc/resolv.conf
+#      remove_resolv=1
+#    fi
+#    chroot ${rootfs_path} rpm --rebuilddb
+#    chroot ${rootfs_path} yum --releasever=${release} -y install centos-release
+#    if [ ! -z $remove_resolv ]; then
+#      rm ${rootfs_path}/etc/resolv.conf
+#    fi
 
     # silence some needless startup errors
     touch ${rootfs_path}/etc/fstab
@@ -127,15 +128,15 @@ download_centos()
     INSTALL_ROOT=$cache/partial
     mkdir -p $INSTALL_ROOT
     if [ $? -ne 0 ]; then
-	echo "Failed to create '$INSTALL_ROOT' directory"
-	return 1
+  echo "Failed to create '$INSTALL_ROOT' directory"
+  return 1
     fi
 
     # download a mini centos into a cache
     echo "Downloading centos minimal ..."
     YUM="yum --installroot $INSTALL_ROOT -y --nogpgcheck"
     PKG_LIST="yum initscripts passwd rsyslog vim-minimal dhclient chkconfig"
-    PKG_LIST="$PKG_LIST rootfiles policycoreutils centos-release openssh-server"
+    PKG_LIST="$PKG_LIST rootfiles policycoreutils centos-release openssh-server avahi"
     MIRRORLIST_URL="http://mirrorlist.centos.org/?release=$release&arch=$arch&repo=os"
 
     DOWNLOAD_OK=no
@@ -166,10 +167,12 @@ download_centos()
     rpm --root $INSTALL_ROOT  --initdb
     rpm --root $INSTALL_ROOT -ivh $INSTALL_ROOT/centos-release-$release-$releaseminor.centos.$arch.rpm
     $YUM install $PKG_LIST
+    chroot $INSTALL_ROOT rm -f /var/lib/rpm/__*
+    chroot $INSTALL_ROOT rpm --rebuilddb
 
     if [ $? -ne 0 ]; then
-	echo "Failed to download the rootfs, aborting."
-	return 1
+  echo "Failed to download the rootfs, aborting."
+  return 1
     fi
 
     mv "$INSTALL_ROOT" "$cache/rootfs"
@@ -192,46 +195,47 @@ copy_centos()
 
 update_centos()
 {
-    chroot $cache/rootfs yum -y update
+#    chroot $cache/rootfs yum -y update
+  echo "Updates disabled"
 }
 
 install_centos()
 {
     mkdir -p /var/lock/subsys/
     (
-	flock -x 200
-	if [ $? -ne 0 ]; then
-	    echo "Cache repository is busy."
-	    return 1
-	fi
+  flock -x 200
+  if [ $? -ne 0 ]; then
+      echo "Cache repository is busy."
+      return 1
+  fi
 
-	echo "Checking cache download in $cache/rootfs ... "
-	if [ ! -e "$cache/rootfs" ]; then
-	    download_centos
-	    if [ $? -ne 0 ]; then
-		echo "Failed to download 'centos base'"
-		return 1
-	    fi
+  echo "Checking cache download in $cache/rootfs ... "
+  if [ ! -e "$cache/rootfs" ]; then
+      download_centos
+      if [ $? -ne 0 ]; then
+    echo "Failed to download 'centos base'"
+    return 1
+      fi
         else
-	    echo "Cache found. Updating..."
+      echo "Cache found. Updating..."
             update_centos
-	    if [ $? -ne 0 ]; then
-		echo "Failed to update 'centos base', continuing with last known good cache"
+      if [ $? -ne 0 ]; then
+    echo "Failed to update 'centos base', continuing with last known good cache"
             else
                 echo "Update finished"
-	    fi
-	fi
+      fi
+  fi
 
-	echo "Copy $cache/rootfs to $rootfs_path ... "
-	copy_centos
-	if [ $? -ne 0 ]; then
-	    echo "Failed to copy rootfs"
-	    return 1
-	fi
+  echo "Copy $cache/rootfs to $rootfs_path ... "
+  copy_centos
+  if [ $? -ne 0 ]; then
+      echo "Failed to copy rootfs"
+      return 1
+  fi
 
-	return 0
+  return 0
 
-	) 200>/var/lock/subsys/lxc
+  ) 200>/var/lock/subsys/lxc
 
     return $?
 }
@@ -274,8 +278,8 @@ proc            proc         proc    nodev,noexec,nosuid 0 0
 sysfs           sys          sysfs defaults  0 0
 EOF
     if [ $? -ne 0 ]; then
-	echo "Failed to add configuration"
-	return 1
+  echo "Failed to add configuration"
+  return 1
     fi
 
     return 0
@@ -285,20 +289,20 @@ clean()
 {
 
     if [ ! -e $cache ]; then
-	exit 0
+  exit 0
     fi
 
     # lock, so we won't purge while someone is creating a repository
     (
-	flock -x 200
-	if [ $? != 0 ]; then
-	    echo "Cache repository is busy."
-	    exit 1
-	fi
+  flock -x 200
+  if [ $? != 0 ]; then
+      echo "Cache repository is busy."
+      exit 1
+  fi
 
-	echo -n "Purging the download cache for Centos-$release-$releaseminor..."
-	rm --preserve-root --one-file-system -rf $cache && echo "Done." || exit 1
-	exit 0
+  echo -n "Purging the download cache for Centos-$release-$releaseminor..."
+  rm --preserve-root --one-file-system -rf $cache && echo "Done." || exit 1
+  exit 0
 
     ) 200>/var/lock/subsys/lxc
 }
@@ -333,13 +337,13 @@ eval set -- "$options"
 while true
 do
     case "$1" in
-	-h|--help)      usage $0 && exit 0;;
-	-p|--path)      path=$2; shift 2;;
-	-n|--name)      name=$2; shift 2;;
-	-c|--clean)     clean=$2; shift 2;;
+  -h|--help)      usage $0 && exit 0;;
+  -p|--path)      path=$2; shift 2;;
+  -n|--name)      name=$2; shift 2;;
+  -c|--clean)     clean=$2; shift 2;;
   -R|--release)   release=$2; shift 2;;
   -m|--releaseminor) releaseminor=$2; shift 2;;
-	--)             shift 1; break ;;
+  --)             shift 1; break ;;
         *)              break ;;
     esac
 done
