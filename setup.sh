@@ -25,6 +25,11 @@ sudo gem install puppetlabs_spec_helper
 # Set up LXC for CentOS
 sudo apt-get install yum lxc 
 sudo cp lxc-centos /usr/lib/lxc/templates
-echo "Remember to add %_dbpath  %{_var}/lib/rpm to your .rpmmacros file"
+if [[ ! -f $HOME/.rpmmacros ]]; then
+  cp rpmmacros $HOME/.rpmmacros
+else
+  echo "Remember to add %_dbpath  %{_var}/lib/rpm to your .rpmmacros file"
+fi
+
 
 
