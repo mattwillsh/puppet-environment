@@ -1,2 +1,31 @@
 Setup a development environment for Puppet. Target OS is Ubuntu, though it
 should be broadly applicable to other type distros too.
+
+The include lxc-centos builds an LXC template for containing a very minimal
+CentOS plus sshd and avahi for name resolution.
+
+TODO:
+
+Script to configure LXC environment (or other VM) post bootstrap via SSH (e.g.
+Fabric). This then pulls in yum.puppetlabs.com configuration, sets up yum repo
+and installs puppet, emulating a live situation. 
+
+Prereq is that their is a route to root via SSH and sudo using a known
+username.
+
+If this is root + password: 
+ - Create new user, assign password, grant sudo access, install ssh pub key
+
+If this is other user + password + sudo + password:
+ - install ssh pub key
+
+If this is other user + ssh key + sudo + password:
+ - This is okay. next step
+
+
+
+
+
+
+
+

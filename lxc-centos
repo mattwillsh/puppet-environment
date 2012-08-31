@@ -249,6 +249,7 @@ lxc.tty = 4
 lxc.pts = 1024
 lxc.rootfs = $rootfs_path
 lxc.mount  = $config_path/fstab
+lxc.arch   = $arch
 
 # uncomment the next line to run the container unconfined:
 #lxc.aa_profile = unconfined
@@ -270,6 +271,18 @@ lxc.cgroup.devices.allow = c 136:* rwm
 lxc.cgroup.devices.allow = c 5:2 rwm
 # rtc
 lxc.cgroup.devices.allow = c 254:0 rwm
+# fuse
+lxc.cgroup.devices.allow = c 10:229 rwm
+#tun
+lxc.cgroup.devices.allow = c 10:200 rwm
+#full
+lxc.cgroup.devices.allow = c 1:7 rwm
+#hpet
+lxc.cgroup.devices.allow = c 10:228 rwm
+#kvm
+lxc.cgroup.devices.allow = c 10:232 rwm
+EOF
+
 EOF
 
     cat <<EOF > $config_path/fstab
