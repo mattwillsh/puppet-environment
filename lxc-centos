@@ -3,6 +3,7 @@
 #
 # template script for generating CentOS container for LXC
 #
+# Updated from Fedora template by Matt Willsher <matt@monki.org.uk>
 
 #
 # lxc: linux Container library
