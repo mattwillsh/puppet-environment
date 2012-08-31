@@ -2,7 +2,8 @@ Setup a development environment for Puppet. Target OS is Ubuntu, though it
 should be broadly applicable to other type distros too.
 
 The include lxc-centos builds an LXC template for containing a very minimal
-CentOS plus sshd and avahi for name resolution.
+CentOS plus sshd and avahi for name resolution. This now works with Fedora
+mock.
 
 TODO:
 
