@@ -20,8 +20,10 @@ All in all, it's handy if you're already running Linux and want to test things o
 Creating CentOS containers on an Ubuntu 12.04 system
 ----------------------------------------------------
 
+This guide assumes that lxc is already installed (sudo apt-get install lxc)
+
 1. Copy the lxc-centos file from https://raw.github.com/mattwillsh/puppet-environment/master/lxc-centos to /usr/lib/lxc/templates
-2. Run:.
+2. Run:
     sudo lxc-create -n myfirstcontainer -t centos
 3. Wait a while while the image gets cached. 
 4. Run:
