@@ -21,11 +21,14 @@ Creating CentOS containers on an Ubuntu 12.04 system
 ----------------------------------------------------
 
 1. Copy the lxc-centos file from https://raw.github.com/mattwillsh/puppet-environment/master/lxc-centos to /usr/lib/lxc/templates
-2. sudo lxc-create -n myfirstcontainer -t centos
+2. Run:.
+    sudo lxc-create -n myfirstcontainer -t centos
 3. Wait a while while the image gets cached. 
-4. sudo lxc-start -n myfirstcontainer -d
+4. Run:
+    sudo lxc-start -n myfirstcontainer -d
 5. Wait a little while. ping myfirstcontainer.local if you like
-6. ssh root@myfirstcontainer.local 
+6. Run:
+    ssh root@myfirstcontainer.local 
 7. Default password is root
 
 You are now inside a running container and, on the whole, it can be configured as a real machine would be. You might want to do a yum groupinstall base to get a full base OS.
