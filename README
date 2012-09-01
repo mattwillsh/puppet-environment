@@ -3,7 +3,8 @@ should be broadly applicable to other type distros too.
 
 The include lxc-centos builds an LXC template for containing a very minimal
 CentOS plus sshd and avahi for name resolution. This now works with Fedora
-mock.
+mock but apparmor needs to be disabled (uncomment lxc.aa_profile line in
+/var/lib/lxc/<cn>/config) - this is probably bad for security.
 
 TODO:
 
