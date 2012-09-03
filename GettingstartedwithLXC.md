@@ -35,3 +35,8 @@ This guide assumes that lxc is already installed (sudo apt-get install lxc)
 
 You are now inside a running container and, on the whole, it can be configured as a real machine would be. You might want to do a yum groupinstall base to get a full base OS.
 
+Using mock inside an CentOS LXC container on Ubuntu
+--------------------------------------------
+
+If you want to run mock under and LXC container, it's easiest to disable the apparmor container for that instances. To do this, stop the container with lxc-stop -n <container-name> then edit /var/lib/lxc/<container-name>/config and uncomment the lxc.aa_profile line.
+The default apparmor configuration for LXC disables bind mounts, which are needed for mock to function. A better fix would be to change the apparmor configuration.
